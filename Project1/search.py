@@ -93,9 +93,7 @@ class Node:
 
     def expand(self, problem):
         """List the nodes reachable in one step from this node."""
-        return [
-            self.child_node(problem, action) for action in problem.actions(self.state)
-        ]
+        return [self.child_node(problem, action) for action in problem.actions(self.state)]
 
     def child_node(self, problem, action):
         """[Figure 3.10]"""
@@ -236,11 +234,7 @@ def depth_first_graph_search(problem):
         if problem.goal_test(node.state):
             return node
         explored.add(node.state)
-        frontier.extend(
-            child
-            for child in node.expand(problem)
-            if child.state not in explored and child not in frontier
-        )
+        frontier.extend(child for child in node.expand(problem) if child.state not in explored and child not in frontier)
     return None
 
 
@@ -659,9 +653,7 @@ def hill_climbing(problem):
         neighbors = current.expand(problem)
         if not neighbors:
             break
-        neighbor = argmax_random_tie(
-            neighbors, key=lambda node: problem.value(node.state)
-        )
+        neighbor = argmax_random_tie(neighbors, key=lambda node: problem.value(node.state))
         if problem.value(neighbor.state) <= problem.value(current.state):
             break
         current = neighbor
@@ -904,8 +896,7 @@ class LRTAStarAgent:
 
                 # minimum cost for action b in problem.actions(s)
                 self.H[self.s] = min(
-                    self.LRTA_cost(self.s, b, self.problem.output(self.s, b), self.H)
-                    for b in self.problem.actions(self.s)
+                    self.LRTA_cost(self.s, b, self.problem.output(self.s, b), self.H) for b in self.problem.actions(self.s)
                 )
 
             # an action b in problem.actions(s1) that minimizes costs
@@ -950,15 +941,10 @@ def genetic_search(problem, ngen=1000, pmut=0.1, n=20):
     return genetic_algorithm(states[:n], problem.value, ngen, pmut)
 
 
-def genetic_algorithm(
-    population, fitness_fn, gene_pool=[0, 1], f_thres=None, ngen=1000, pmut=0.1
-):
+def genetic_algorithm(population, fitness_fn, gene_pool=[0, 1], f_thres=None, ngen=1000, pmut=0.1):
     """[Figure 4.8]"""
     for i in range(ngen):
-        population = [
-            mutate(recombine(*select(2, population, fitness_fn)), gene_pool, pmut)
-            for i in range(len(population))
-        ]
+        population = [mutate(recombine(*select(2, population, fitness_fn)), gene_pool, pmut) for i in range(len(population))]
 
         fittest_individual = fitness_threshold(fitness_fn, f_thres, population)
         if fittest_individual:
@@ -986,9 +972,7 @@ def init_population(pop_number, gene_pool, state_length):
     g = len(gene_pool)
     population = []
     for i in range(pop_number):
-        new_individual = [
-            gene_pool[random.randrange(0, g)] for j in range(state_length)
-        ]
+        new_individual = [gene_pool[random.randrange(0, g)] for j in range(state_length)]
         population.append(new_individual)
 
     return population
@@ -1215,9 +1199,7 @@ one_dim_state_space = Graph(
         State_6=dict(Left="State_5"),
     )
 )
-one_dim_state_space.least_costs = dict(
-    State_1=8, State_2=9, State_3=2, State_4=2, State_5=4, State_6=3
-)
+one_dim_state_space.least_costs = dict(State_1=8, State_2=9, State_3=2, State_4=2, State_5=4, State_6=3)
 
 """ [Figure 6.1]
 Principal states and territories of Australia
@@ -1319,9 +1301,7 @@ class NQueensProblem(Problem):
             return []  # All columns filled; no successors
         else:
             col = state.index(-1)
-            return [
-                row for row in range(self.N) if not self.conflicted(state, row, col)
-            ]
+            return [row for row in range(self.N) if not self.conflicted(state, row, col)]
 
     def result(self, state, row):
         """Place the next queen at the given row."""
@@ -1347,9 +1327,7 @@ class NQueensProblem(Problem):
         """Check if all columns filled, no conflicts."""
         if state[-1] == -1:
             return False
-        return not any(
-            self.conflicted(state, state[col], col) for col in range(len(state))
-        )
+        return not any(self.conflicted(state, state[col], col) for col in range(len(state)))
 
     def h(self, node):
         """Return number of conflicting queens for a given node"""
@@ -1631,9 +1609,7 @@ class InstrumentedProblem(Problem):
         return getattr(self.problem, attr)
 
     def __repr__(self):
-        return "<{:4d}/{:4d}/{:4d}/{}>".format(
-            self.succs, self.goal_tests, self.states, str(self.found)[:4]
-        )
+        return "<{:4d}/{:4d}/{:4d}/{}>".format(self.succs, self.goal_tests, self.states, str(self.found)[:4])
 
 
 def compare_searchers(

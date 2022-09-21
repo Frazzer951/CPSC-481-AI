@@ -14,9 +14,7 @@ class WolfGoatCabbage(Problem):
             (
                 ("F" in new_state and ("W" not in new_state and "G" not in new_state))
                 or ("F" not in new_state and ("W" in new_state and "G" in new_state))
-                or (
-                    "F" in new_state and ("G" not in new_state and "C" not in new_state)
-                )
+                or ("F" in new_state and ("G" not in new_state and "C" not in new_state))
                 or ("F" not in new_state and ("G" in new_state and "C" in new_state))
             )
         )
@@ -44,9 +42,7 @@ class WolfGoatCabbage(Problem):
             things = [item for item in ["W", "G", "C"] if item not in state]
             possible_actions.extend([{"F", x} for x in things])
 
-        return [
-            action for action in possible_actions if self.is_valid_action(state, action)
-        ]
+        return [action for action in possible_actions if self.is_valid_action(state, action)]
 
     def result(self, state, action):
         """Return the state that results from executing the given

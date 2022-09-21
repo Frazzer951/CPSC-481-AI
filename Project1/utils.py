@@ -20,11 +20,7 @@ import numpy as np
 
 def sequence(iterable):
     """Converts iterable to sequence, if it is not already one."""
-    return (
-        iterable
-        if isinstance(iterable, collections.abc.Sequence)
-        else tuple([iterable])
-    )
+    return iterable if isinstance(iterable, collections.abc.Sequence) else tuple([iterable])
 
 
 def remove_all(item, seq):
@@ -247,9 +243,7 @@ def hamming_distance(x, y):
 
 
 def cross_entropy_loss(x, y):
-    return (-1.0 / len(x)) * sum(
-        _x * np.log(_y) + (1 - _x) * np.log(1 - _y) for _x, _y in zip(x, y)
-    )
+    return (-1.0 / len(x)) * sum(_x * np.log(_y) + (1 - _x) * np.log(1 - _y) for _x, _y in zip(x, y))
 
 
 def mean_squared_error_loss(x, y):
@@ -336,11 +330,7 @@ def step(x):
 
 def gaussian(mean, st_dev, x):
     """Given the mean and standard deviation of a distribution, it returns the probability of x."""
-    return (
-        1
-        / (np.sqrt(2 * np.pi) * st_dev)
-        * np.e ** (-0.5 * (float(x - mean) / st_dev) ** 2)
-    )
+    return 1 / (np.sqrt(2 * np.pi) * st_dev) * np.e ** (-0.5 * (float(x - mean) / st_dev) ** 2)
 
 
 def linear_kernel(x, y=None):
@@ -362,12 +352,7 @@ def rbf_kernel(x, y=None, gamma=None):
     if gamma is None:
         gamma = 1.0 / x.shape[1]  # 1.0 / n_features
     return np.exp(
-        -gamma
-        * (
-            -2.0 * np.dot(x, y.T)
-            + np.sum(x * x, axis=1).reshape((-1, 1))
-            + np.sum(y * y, axis=1).reshape((1, -1))
-        )
+        -gamma * (-2.0 * np.dot(x, y.T) + np.sum(x * x, axis=1).reshape((-1, 1)) + np.sum(y * y, axis=1).reshape((1, -1)))
     )
 
 
@@ -480,18 +465,10 @@ def print_table(table, header=None, sep="   ", numfmt="{}"):
 
     table = [[numfmt.format(x) if isnumber(x) else x for x in row] for row in table]
 
-    sizes = list(
-        map(
-            lambda seq: max(map(len, seq)), list(zip(*[map(str, row) for row in table]))
-        )
-    )
+    sizes = list(map(lambda seq: max(map(len, seq)), list(zip(*[map(str, row) for row in table]))))
 
     for row in table:
-        print(
-            sep.join(
-                getattr(str(x), j)(size) for (j, size, x) in zip(justs, sizes, row)
-            )
-        )
+        print(sep.join(getattr(str(x), j)(size) for (j, size, x) in zip(justs, sizes, row)))
 
 
 def open_data(name, mode="r"):
@@ -633,9 +610,7 @@ class Expr:
     # Equality and repr
     def __eq__(self, other):
         """x == y' evaluates to True or False; does not build an Expr."""
-        return (
-            isinstance(other, Expr) and self.op == other.op and self.args == other.args
-        )
+        return isinstance(other, Expr) and self.op == other.op and self.args == other.args
 
     def __lt__(self, other):
         return isinstance(other, Expr) and str(self) < str(other)
@@ -713,11 +688,7 @@ def expr(x):
     >>> expr('P & Q ==> Q')
     ((P & Q) ==> Q)
     """
-    return (
-        eval(expr_handle_infix_ops(x), defaultkeydict(Symbol))
-        if isinstance(x, str)
-        else x
-    )
+    return eval(expr_handle_infix_ops(x), defaultkeydict(Symbol)) if isinstance(x, str) else x
 
 
 infix_ops = "==> <== <=>".split()
