@@ -1,5 +1,4 @@
-from search import (Problem, breadth_first_graph_search,
-                    depth_first_graph_search)
+from search import Problem, breadth_first_graph_search, depth_first_graph_search
 
 
 class WolfGoatCabbage(Problem):

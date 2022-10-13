@@ -9,8 +9,8 @@ import numpy as np
 
 from utils import vector_add
 
-GameState = namedtuple('GameState', 'to_move, utility, board, moves')
-StochasticGameState = namedtuple('StochasticGameState', 'to_move, utility, board, moves, chance')
+GameState = namedtuple("GameState", "to_move, utility, board, moves")
+StochasticGameState = namedtuple("StochasticGameState", "to_move, utility, board, moves, chance")
 
 
 # ______________________________________________________________________________
@@ -50,8 +50,8 @@ def expect_minmax(state, game):
     """
     [Figure 5.11]
     Return the best move for a player after dice are thrown. The game tree
-	includes chance nodes along with min and max nodes.
-	"""
+    includes chance nodes along with min and max nodes.
+    """
     player = game.to_move(state)
 
     def max_value(state):
@@ -158,7 +158,7 @@ def alpha_beta_cutoff_search(state, game, d=4, cutoff_test=None, eval_fn=None):
 
     # Body of alpha_beta_cutoff_search starts here:
     # The default test cuts off at depth d or at a terminal state
-    cutoff_test = (cutoff_test or (lambda state, depth: depth > d or game.terminal_test(state)))
+    cutoff_test = cutoff_test or (lambda state, depth: depth > d or game.terminal_test(state))
     eval_fn = eval_fn or (lambda state: game.utility(state, player))
     best_score = -np.inf
     beta = np.inf
@@ -183,13 +183,13 @@ def query_player(game, state):
     print("")
     move = None
     if game.actions(state):
-        move_string = input('Your move? ')
+        move_string = input("Your move? ")
         try:
             move = eval(move_string)
         except NameError:
             move = move_string
     else:
-        print('no legal moves: passing turn to next player')
+        print("no legal moves: passing turn to next player")
     return move
 
 
@@ -202,8 +202,8 @@ def alpha_beta_player(game, state):
     return alpha_beta_search(state, game)
 
 
-def minmax_player(game,state):
-    return minmax_decision(state,game)
+def minmax_player(game, state):
+    return minmax_decision(state, game)
 
 
 def expect_minmax_player(game, state):
@@ -248,7 +248,7 @@ class Game:
         print(state)
 
     def __repr__(self):
-        return '<{}>'.format(self.__class__.__name__)
+        return "<{}>".format(self.__class__.__name__)
 
     def play_game(self, *players):
         """Play an n-person, move-alternating game."""
@@ -297,12 +297,14 @@ class StochasticGame(Game):
 class Fig52Game(Game):
     """The game represented in [Figure 5.2]. Serves as a simple test case."""
 
-    succs = dict(A=dict(a1='B', a2='C', a3='D'),
-                 B=dict(b1='B1', b2='B2', b3='B3'),
-                 C=dict(c1='C1', c2='C2', c3='C3'),
-                 D=dict(d1='D1', d2='D2', d3='D3'))
+    succs = dict(
+        A=dict(a1="B", a2="C", a3="D"),
+        B=dict(b1="B1", b2="B2", b3="B3"),
+        C=dict(c1="C1", c2="C2", c3="C3"),
+        D=dict(d1="D1", d2="D2", d3="D3"),
+    )
     utils = dict(B1=3, B2=12, B3=8, C1=2, C2=4, C3=6, D1=14, D2=5, D3=2)
-    initial = 'A'
+    initial = "A"
 
     def actions(self, state):
         return list(self.succs.get(state, {}).keys())
@@ -311,16 +313,16 @@ class Fig52Game(Game):
         return self.succs[state][move]
 
     def utility(self, state, player):
-        if player == 'MAX':
+        if player == "MAX":
             return self.utils[state]
         else:
             return -self.utils[state]
 
     def terminal_test(self, state):
-        return state not in ('A', 'B', 'C', 'D')
+        return state not in ("A", "B", "C", "D")
 
     def to_move(self, state):
-        return 'MIN' if state in 'BCD' else 'MAX'
+        return "MIN" if state in "BCD" else "MAX"
 
 
 class Fig52Extended(Game):
@@ -336,7 +338,7 @@ class Fig52Extended(Game):
         return self.succs[state][move]
 
     def utility(self, state, player):
-        if player == 'MAX':
+        if player == "MAX":
             return self.utils[state]
         else:
             return -self.utils[state]
@@ -345,7 +347,7 @@ class Fig52Extended(Game):
         return state not in range(13)
 
     def to_move(self, state):
-        return 'MIN' if state in {1, 2, 3} else 'MAX'
+        return "MIN" if state in {1, 2, 3} else "MAX"
 
 
 class TicTacToe(Game):
@@ -358,9 +360,8 @@ class TicTacToe(Game):
         self.h = h
         self.v = v
         self.k = k
-        moves = [(x, y) for x in range(1, h + 1)
-                 for y in range(1, v + 1)]
-        self.initial = GameState(to_move='X', utility=0, board={}, moves=moves)
+        moves = [(x, y) for x in range(1, h + 1) for y in range(1, v + 1)]
+        self.initial = GameState(to_move="X", utility=0, board={}, moves=moves)
 
     def actions(self, state):
         """Legal moves are any square not yet taken."""
@@ -373,13 +374,16 @@ class TicTacToe(Game):
         board[move] = state.to_move
         moves = list(state.moves)
         moves.remove(move)
-        return GameState(to_move=('O' if state.to_move == 'X' else 'X'),
-                         utility=self.compute_utility(board, move, state.to_move),
-                         board=board, moves=moves)
+        return GameState(
+            to_move=("O" if state.to_move == "X" else "X"),
+            utility=self.compute_utility(board, move, state.to_move),
+            board=board,
+            moves=moves,
+        )
 
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
-        return state.utility if player == 'X' else -state.utility
+        return state.utility if player == "X" else -state.utility
 
     def terminal_test(self, state):
         """A state is terminal if it is won or there are no empty squares."""
@@ -389,16 +393,18 @@ class TicTacToe(Game):
         board = state.board
         for x in range(1, self.h + 1):
             for y in range(1, self.v + 1):
-                print(board.get((x, y), '.'), end=' ')
+                print(board.get((x, y), "."), end=" ")
             print()
 
     def compute_utility(self, board, move, player):
         """If 'X' wins with this move, return 1; if 'O' wins return -1; else return 0."""
-        if (self.k_in_row(board, move, player, (0, 1)) or
-                self.k_in_row(board, move, player, (1, 0)) or
-                self.k_in_row(board, move, player, (1, -1)) or
-                self.k_in_row(board, move, player, (1, 1))):
-            return +1 if player == 'X' else -1
+        if (
+            self.k_in_row(board, move, player, (0, 1))
+            or self.k_in_row(board, move, player, (1, 0))
+            or self.k_in_row(board, move, player, (1, -1))
+            or self.k_in_row(board, move, player, (1, 1))
+        ):
+            return +1 if player == "X" else -1
         else:
             return 0
 
@@ -427,8 +433,8 @@ class ConnectFour(TicTacToe):
         TicTacToe.__init__(self, h, v, k)
 
     def actions(self, state):
-        return [(x, y) for (x, y) in state.moves
-                if x == self.h or (x + 1 , y ) in state.board]
+        return [(x, y) for (x, y) in state.moves if x == self.h or (x + 1, y) in state.board]
+
 
 class Gomoku(TicTacToe):
     """Also known as Five in a row."""
@@ -439,23 +445,22 @@ class Gomoku(TicTacToe):
 
 class Backgammon(StochasticGame):
     """A two player game where the goal of each player is to move all the
-	checkers off the board. The moves for each state are determined by
-	rolling a pair of dice."""
+    checkers off the board. The moves for each state are determined by
+    rolling a pair of dice."""
 
     def __init__(self):
         """Initial state of the game"""
-        point = {'W': 0, 'B': 0}
+        point = {"W": 0, "B": 0}
         board = [point.copy() for index in range(24)]
-        board[0]['B'] = board[23]['W'] = 2
-        board[5]['W'] = board[18]['B'] = 5
-        board[7]['W'] = board[16]['B'] = 3
-        board[11]['B'] = board[12]['W'] = 5
-        self.allow_bear_off = {'W': False, 'B': False}
-        self.direction = {'W': -1, 'B': 1}
-        self.initial = StochasticGameState(to_move='W',
-                                           utility=0,
-                                           board=board,
-                                           moves=self.get_all_moves(board, 'W'), chance=None)
+        board[0]["B"] = board[23]["W"] = 2
+        board[5]["W"] = board[18]["B"] = 5
+        board[7]["W"] = board[16]["B"] = 3
+        board[11]["B"] = board[12]["W"] = 5
+        self.allow_bear_off = {"W": False, "B": False}
+        self.direction = {"W": -1, "B": 1}
+        self.initial = StochasticGameState(
+            to_move="W", utility=0, board=board, moves=self.get_all_moves(board, "W"), chance=None
+        )
 
     def actions(self, state):
         """Return a list of legal moves for a state."""
@@ -476,15 +481,18 @@ class Backgammon(StochasticGame):
         self.move_checker(board, move[0], state.chance[0], player)
         if len(move) == 2:
             self.move_checker(board, move[1], state.chance[1], player)
-        to_move = ('W' if player == 'B' else 'B')
-        return StochasticGameState(to_move=to_move,
-                                   utility=self.compute_utility(board, move, player),
-                                   board=board,
-                                   moves=self.get_all_moves(board, to_move), chance=None)
+        to_move = "W" if player == "B" else "B"
+        return StochasticGameState(
+            to_move=to_move,
+            utility=self.compute_utility(board, move, player),
+            board=board,
+            moves=self.get_all_moves(board, to_move),
+            chance=None,
+        )
 
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
-        return state.utility if player == 'W' else -state.utility
+        return state.utility if player == "W" else -state.utility
 
     def terminal_test(self, state):
         """A state is terminal if one player wins."""
@@ -495,13 +503,11 @@ class Backgammon(StochasticGame):
         choosing two checkers of a player from the board for a move
         at a given state."""
         all_points = board
-        taken_points = [index for index, point in enumerate(all_points)
-                        if point[player] > 0]
+        taken_points = [index for index, point in enumerate(all_points) if point[player] > 0]
         if self.checkers_at_home(board, player) == 1:
             return [(taken_points[0],)]
         moves = list(itertools.permutations(taken_points, 2))
-        moves = moves + [(index, index) for index, point in enumerate(all_points)
-                         if point[player] >= 2]
+        moves = moves + [(index, index) for index, point in enumerate(all_points) if point[player] >= 2]
         return moves
 
     def display(self, state):
@@ -510,12 +516,12 @@ class Backgammon(StochasticGame):
         player = state.to_move
         print("current state : ")
         for index, point in enumerate(board):
-            print("point : ", index, "	W : ", point['W'], "    B : ", point['B'])
+            print("point : ", index, "	W : ", point["W"], "    B : ", point["B"])
         print("to play : ", player)
 
     def compute_utility(self, board, move, player):
         """If 'W' wins with this move, return 1; if 'B' wins return -1; else return 0."""
-        util = {'W': 1, 'B': -1}
+        util = {"W": 1, "B": -1}
         for idx in range(0, 24):
             if board[idx][player] > 0:
                 return 0
@@ -523,7 +529,7 @@ class Backgammon(StochasticGame):
 
     def checkers_at_home(self, board, player):
         """Return the no. of checkers at home for a player."""
-        sum_range = range(0, 7) if player == 'W' else range(17, 24)
+        sum_range = range(0, 7) if player == "W" else range(17, 24)
         count = 0
         for idx in sum_range:
             count = count + board[idx][player]
@@ -531,8 +537,8 @@ class Backgammon(StochasticGame):
 
     def is_legal_move(self, board, start, steps, player):
         """Move is a tuple which contains starting points of checkers to be
-		moved during a player's turn. An on-board move is legal if both the destinations
-		are open. A bear-off move is the one where a checker is moved off-board.
+                moved during a player's turn. An on-board move is legal if both the destinations
+                are open. A bear-off move is the one where a checker is moved off-board.
         It is legal only after a player has moved all his checkers to his home."""
         dest1, dest2 = vector_add(start, steps)
         dest_range = range(0, 24)
@@ -569,7 +575,7 @@ class Backgammon(StochasticGame):
         """A point is open for a player if the no. of opponent's
         checkers already present on it is 0 or 1. A player can
         move a checker to a point only if it is open."""
-        opponent = 'B' if player == 'W' else 'W'
+        opponent = "B" if player == "W" else "W"
         return point[opponent] <= 1
 
     def chances(self, state):
@@ -580,10 +586,9 @@ class Backgammon(StochasticGame):
     def outcome(self, state, chance):
         """Return the state which is the outcome of a dice roll."""
         dice = tuple(map((self.direction[state.to_move]).__mul__, chance))
-        return StochasticGameState(to_move=state.to_move,
-                                   utility=state.utility,
-                                   board=state.board,
-                                   moves=state.moves, chance=dice)
+        return StochasticGameState(
+            to_move=state.to_move, utility=state.utility, board=state.board, moves=state.moves, chance=dice
+        )
 
     def probability(self, chance):
         """Return the probability of occurrence of a dice roll."""
