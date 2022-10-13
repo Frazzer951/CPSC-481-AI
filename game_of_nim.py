@@ -1,4 +1,4 @@
-from games import Game, alpha_beta_player, query_player, GameState
+from games import Game, GameState, alpha_beta_player, query_player
 
 
 class GameOfNim(Game):
