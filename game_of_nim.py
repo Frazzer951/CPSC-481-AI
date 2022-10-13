@@ -8,14 +8,12 @@ class GameOfNim(Game):
 
     def result(self, state, move):
         """Return the state that results from making a move from a state."""
-        if move not in state.moves:
-            return state  # Illegal move has no effect
         board = state.board.copy()
         board[move[0]] -= move[1]
         moves = [(i, y) for i, x in enumerate(board) for y in range(1, x + 1)]
         return GameState(
             to_move=("MIN" if state.to_move == "MAX" else "MAX"),
-            utility=0,
+            utility=self.compute_utility(board, state.to_move),
             board=board,
             moves=moves,
         )
@@ -26,16 +24,32 @@ class GameOfNim(Game):
 
     def terminal_test(self, state):
         """A state is terminal if it is won or there are no empty squares."""
-        for val in state.board:
-            if val != 0:
-                return False
-        return True
+        return state.utility != 0 or len(state.moves) == 0
 
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
-        if self.terminal_test(state):
-            return +1 if player == "MAX" else -1
-        raise NotImplementedError
+        return state.utility if player == "X" else -state.utility
+
+    def compute_utility(self, board, player):
+        """If 'MAX' wins with this move, return 1; if 'MIN' wins return -1; else return 0."""
+        if all(val == 0 for val in board):
+            return -1 if player == "MAX" else +1
+        else:
+            return 0
+
+    # def play_game(self, *players):
+    #     """Play an n-person, move-alternating game."""
+    #     state = self.initial
+    #     while True:
+    #         for player in players:
+    #             print(f"\nInitial board: {state.board}")
+    #             move = player(self, state)
+    #             print(f"Player: {state.to_move} Move: {move}")
+    #             state = self.result(state, move)
+    #             print(f"New board: {state.board}")
+    #             if self.terminal_test(state):
+    #                 self.display(state)
+    #                 return self.utility(state, self.to_move(self.initial))
 
 
 if __name__ == "__main__":
