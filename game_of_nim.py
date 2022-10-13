@@ -28,12 +28,12 @@ class GameOfNim(Game):
 
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
-        return state.utility if player == "X" else -state.utility
+        return state.utility if player == "MAX" else -state.utility
 
     def compute_utility(self, board, player):
         """If 'MAX' wins with this move, return 1; if 'MIN' wins return -1; else return 0."""
         if all(val == 0 for val in board):
-            return -1 if player == "MAX" else +1
+            return +1 if player == "MAX" else -1
         else:
             return 0
 
